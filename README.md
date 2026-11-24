@@ -4,7 +4,7 @@ Reconcile is a planned MCP reliability layer for agents that change external sys
 
 ## Phase A · Recovery policy
 
-[recovery_policy.py](recovery_policy.py) implements the decision table in Python with no third-party dependencies. It returns an action and a stable rule ID that a future worker can record alongside provider evidence. The server, ledger, provider adapters and dashboard are planned.
+[recovery_policy.py](recovery_policy.py) implements the decision table in Python with no third-party dependencies. It returns an action and a stable rule ID that a future worker can record alongside provider evidence. The server, operation ledger and dashboard are planned.
 
 | Provider observation | Phase A decision |
 | --- | --- |
@@ -21,6 +21,22 @@ decision = decide_recovery(Observation.EXECUTED_MATCHING, conclusive=True)
 print(decision.action.value, decision.rule_id)
 # verify execution_matches
 ```
+
+## Phase 1, Part 1 · Local payment recovery demo
+
+Run with Python 3.10 or newer. No packages or credentials are needed.
+
+```sh
+python payment_simulator.py
+```
+
+```text
+Recovery decision: verify (execution_matches)
+Blind retry: 2 charges
+Reconcile:   1 charge
+```
+
+Each run uses a separate temporary SQLite database. The simulator commits the charge before raising a timeout. The Reconcile path looks up the reference on a fresh connection and passes the observation to the Phase A policy. The demo exercises the simulated provider and recovery decision. The operation ledger, MCP endpoint and background worker are later parts of the MVP.
 
 ## Planned architecture
 
